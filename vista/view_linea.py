@@ -1,12 +1,12 @@
 """
-vista/consola.py
+vista/view_linea.py
 ================
 La VISTA: muestra el menu, pide los datos por teclado y muestra los
 resultados. Es la parte que "se ve". Cuando hay que guardar o leer datos,
 le pide ayuda al Controlador.
 """
 
-from controlador.controlador import Controlador
+from controlador.ctr_linea import Controlador
 
 
 class Vista:
@@ -42,13 +42,16 @@ class Vista:
 
     def mostrar(self, lineas):
         # Muestra la lista numerada (1, 2, 3...).
+        # OJO: el "numero" de la lista es solo la posicion en pantalla para
+        # elegir; el "id" es el identificador real y unico de cada linea
+        # (lo generó el Modelo de forma automatica) y no cambia aunque borres.
         if len(lineas) == 0:
             print("\nNo hay lineas guardadas.")
             return
         print("\n----- LINEAS -----")
         numero = 1
         for d in lineas:
-            print(f"{numero}). {d.nombre} | Orden: {d.orden}")
+            print(f"{numero}). (id: {d.id}) {d.nombre} | Orden: {d.orden}")
             numero = numero + 1
 
     def agregar(self):
@@ -62,8 +65,14 @@ class Vista:
             print("Orden debe ser un numero.")
             return
 
-        self.controlador.agregar(nombre, orden)
-        print("\nLinea agregada.")
+        # try / except: si al guardar algo falla (por ejemplo, no se puede
+        # escribir el archivo), NO se cae el programa. Mostramos el error y
+        # el menu sigue funcionando.
+        try:
+            self.controlador.agregar(nombre, orden)
+            print("\nLinea agregada.")
+        except Exception as ex:
+            print(f"\nNo se pudo agregar la linea: {ex}")
 
     def listar(self):
         lineas = self.controlador.listar()
@@ -75,14 +84,13 @@ class Vista:
         if len(lineas) == 0:
             return
 
-        numero = input("\nNumero de la linea a editar: ")
-        if not numero.isdigit():
-            print("Eso no es un numero.")
+        # Ahora pedimos el ID del registro (el numero que sale entre parentesis),
+        # no la posicion en la lista.
+        id = input("\nId de la linea a editar: ")
+        if not id.isdigit():
+            print("El id debe ser un numero.")
             return
-        numero = int(numero)
-        if numero < 1 or numero > len(lineas):
-            print("Ese numero no esta en la lista.")
-            return
+        id = int(id)
 
         print("Escribe los datos nuevos:")
         nombre = input("Nombre: ").strip()
@@ -94,8 +102,13 @@ class Vista:
             print("Orden debe ser un numero.")
             return
 
-        self.controlador.editar(numero, nombre, orden)
-        print("\nLinea actualizada.")
+        # try / except: si el id NO existe, el controlador lanza un error
+        # y aqui lo atrapamos para mostrar el mensaje sin caernos.
+        try:
+            self.controlador.editar(id, nombre, orden)
+            print("\nLinea actualizada.")
+        except Exception as ex:
+            print(f"\nNo se pudo editar la linea: {ex}")
 
     def eliminar(self):
         lineas = self.controlador.listar()
@@ -103,19 +116,22 @@ class Vista:
         if len(lineas) == 0:
             return
 
-        numero = input("\nNumero de la linea a eliminar: ")
-        if not numero.isdigit():
-            print("Eso no es un numero.")
+        # Pedimos el ID del registro (el numero entre parentesis), no la posicion.
+        id = input("\nId de la linea a eliminar: ")
+        if not id.isdigit():
+            print("El id debe ser un numero.")
             return
-        numero = int(numero)
-        if numero < 1 or numero > len(lineas):
-            print("Ese numero no esta en la lista.")
-            return
+        id = int(id)
 
-        confirm = input(f"Confirma eliminar la linea {numero}? (s/n): ").strip().lower()
+        confirm = input(f"Confirma eliminar la linea con id {id}? (s/n): ").strip().lower()
         if confirm != 's':
             print("Operacion cancelada.")
             return
 
-        self.controlador.eliminar(numero)
-        print("\nLinea eliminada.")
+        # try / except: si el id NO existe, el controlador lanza un error
+        # y aqui lo atrapamos para mostrar el mensaje sin caernos.
+        try:
+            self.controlador.eliminar(id)
+            print("\nLinea eliminada.")
+        except Exception as ex:
+            print(f"\nNo se pudo eliminar la linea: {ex}")

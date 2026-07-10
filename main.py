@@ -10,7 +10,7 @@ Este es el archivo que se ejecuta para USAR el programa.
 #     python main.py
 """
 
-from vista.consola import Vista
+from vista.view_linea import Vista
 
 
 
