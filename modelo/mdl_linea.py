@@ -4,6 +4,10 @@ modelo/mdl_linea.py
 El MODELO: aqui solo definimos QUE es una linea.
 El modelo NO pide datos por teclado ni muestra menus.
 
+Campos: id_linea (PK), nombre, estado.
+La Linea es un catalogo INDEPENDIENTE de la Categoria: no guarda ninguna
+referencia a ella. Quien las relaciona es el Producto (con sus FK).
+
 Novedad de este ejercicio: el campo "id".
     - Es AUTOINCREMENTABLE: cada linea nueva recibe el siguiente numero
       automaticamente, sin que el usuario lo escriba.
@@ -14,7 +18,7 @@ Novedad de este ejercicio: el campo "id".
 
 class Linea:
 
-    def __init__(self, nombre, orden, id):
+    def __init__(self, nombre, estado, id):
         """
         Constructor: se ejecuta al hacer Linea(...). Solo GUARDA los datos.
         El id ya viene calculado desde fuera (por eso el constructor queda
@@ -22,7 +26,7 @@ class Linea:
         """
         self._id = int(id)
         self._nombre = nombre
-        self._orden = orden
+        self._estado = estado
 
     @staticmethod
     def siguiente_id(lineas):
@@ -68,11 +72,12 @@ class Linea:
         self._nombre = valor
 
     @property
-    def orden(self):
-        # Al escribir 'linea.orden' se devuelve el orden guardado.
-        return self._orden
+    def estado(self):
+        # Al escribir 'linea.estado' se devuelve el estado guardado
+        # ("activo" o "inactivo").
+        return self._estado
 
-    @orden.setter
-    def orden(self, valor):
-        # Al escribir 'linea.orden = 3' se guarda el nuevo valor aqui.
-        self._orden = valor
+    @estado.setter
+    def estado(self, valor):
+        # Al escribir 'linea.estado = "activo"' se guarda el nuevo valor aqui.
+        self._estado = valor

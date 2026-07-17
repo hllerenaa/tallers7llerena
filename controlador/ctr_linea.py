@@ -5,9 +5,12 @@ El CONTROLADOR: es el "intermediario". Solo se encarga de GUARDAR y LEER las
 lineas en el archivo. No muestra menus ni pide datos (de eso se encarga la
 Vista) y no define que es una linea (de eso se encarga el Modelo).
 
+La Linea es un catalogo INDEPENDIENTE de la Categoria: tiene su propio
+archivo y no guarda ninguna referencia a otros catalogos.
+
 Cada linea se guarda como una fila de texto separada por comas:
-    id,nombre,orden
-Ejemplo:  1,Camisetas,2
+    id,nombre,estado
+Ejemplo:  1,Deportiva,activo
 """
 
 import os
@@ -18,11 +21,11 @@ from modelo.mdl_linea import Linea
 class Controlador:
 
     def __init__(self):
-        # Preparamos la ruta del archivo: media/tiendavirtual.txt
+        # Preparamos la ruta del archivo: media/lineas.txt
         raiz = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         carpeta = os.path.join(raiz, "media")
         os.makedirs(carpeta, exist_ok=True)   # crea la carpeta si no existe
-        self.archivo = os.path.join(carpeta, "tiendavirtual.txt")
+        self.archivo = os.path.join(carpeta, "lineas.txt")
 
     def listar(self):
         # Lee el archivo y devuelve una lista de objetos Linea.
@@ -34,10 +37,10 @@ class Controlador:
                     l = l.strip()
                     if l == "":
                         continue
-                    # Cada fila trae 3 datos: id, nombre y orden.
-                    id, nombre, orden = l.split(",")
+                    # Cada fila trae 3 datos: id, nombre y estado.
+                    id, nombre, estado = l.split(",")
                     # Pasamos el id para CONSERVAR el que ya tenia guardado.
-                    linea = Linea(nombre, orden, id)
+                    linea = Linea(nombre, estado, id)
                     lineas.append(linea)
         except FileNotFoundError:
             # Si el archivo todavia no existe, devolvemos la lista vacia.
@@ -49,22 +52,22 @@ class Controlador:
         with open(self.archivo, "w", encoding="utf-8") as archivo:
             for d in lineas:
                 # Guardamos tambien el id al principio de cada fila.
-                archivo.write(f"{d.id},{d.nombre},{d.orden}\n")
+                archivo.write(f"{d.id},{d.nombre},{d.estado}\n")
 
-    def agregar(self, nombre, orden):
+    def agregar(self, nombre, estado):
         lineas = self.listar()
         # Pedimos el id nuevo al metodo del Modelo: el mas alto + 1.
         nuevo_id = Linea.siguiente_id(lineas)
-        lineas.append(Linea(nombre, orden, nuevo_id))
+        lineas.append(Linea(nombre, estado, nuevo_id))
         self.guardar(lineas)
 
-    def editar(self, id, nombre, orden):
+    def editar(self, id, nombre, estado):
         # Buscamos la linea POR SU ID (no por su posicion en la lista).
         lineas = self.listar()
         for i in range(len(lineas)):
             if lineas[i].id == id:
                 # La encontramos: la reemplazamos conservando el MISMO id.
-                lineas[i] = Linea(nombre, orden, id)
+                lineas[i] = Linea(nombre, estado, id)
                 self.guardar(lineas)
                 return
         # Si el bucle termina sin encontrarla, avisamos con un error.
