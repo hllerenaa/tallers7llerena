@@ -3,6 +3,10 @@
 > Objetivo: que se entienda lo NUEVO de este modulo: las **claves foraneas
 > (FK)**. Marca, Categoria y Linea son catalogos sueltos; el Producto es
 > quien los conecta. Conviene explicar este modulo DESPUES del de Marca.
+>
+> Apoyo visual: la pagina de diagramas (el UML muestra las FK con flechas
+> y el diagrama de flujo 4 es exactamente "agregar producto"):
+> https://claude.ai/code/artifact/423f185b-9e39-4887-ab48-27f41678460b
 
 ---
 
@@ -165,21 +169,30 @@ marca = self.nombre_por_id(marcas, p.id_marca)
 
 ## 5. Demo en vivo (5 min)
 
+Ya hay 4 datos de prueba en cada catalogo (marcas: Nike, Adidas, Samsung,
+HP; categorias: Calzado, Ropa, Tecnologia, Hogar; lineas: Deportiva,
+Casual, Premium, Economica) y 4 productos creados con ellos.
+
 Seguir este orden (es importante):
 
-1. Con los catalogos vacios, intentar crear un producto → dice "No hay
-   marcas registradas" y no deja seguir. **Primero los catalogos, luego
-   el producto.**
-2. Crear la marca "Nike", la categoria "Calzado" y la linea "Deportiva".
-3. Crear el producto "Zapatilla Air": el sistema muestra cada catalogo y
-   pide el id. Poner precio 59.99 y stock 10.
-4. Listar productos → se ven los NOMBRES, no los numeros.
-5. Abrir `media/productos.txt` → se ven los NUMEROS: `1,Zapatilla Air,1,1,1,59.99,10`.
-   Este contraste (paso 4 vs paso 5) es el momento "ajá" de las FK.
-6. Intentar poner id de marca 99 → "No existe ese id en marcas".
-7. Editar la marca "Nike" a "Nike Inc" y volver a listar productos → el
+1. Listar productos → se ven los NOMBRES: "Zapatilla Air | Marca: Nike |
+   Categoria: Calzado | Linea: Deportiva".
+2. Abrir `media/productos.txt` → se ven los NUMEROS: `1,Zapatilla Air,1,1,1,59.99,10`.
+   Este contraste (paso 1 vs paso 2) es el momento "ajá" de las FK.
+3. Agregar un producto nuevo (ej: "Mouse Gamer"): el sistema muestra cada
+   catalogo y pide el id. Elegir marca 4 (HP), categoria 3 (Tecnologia),
+   linea 4 (Economica), precio 15.99, stock 30.
+4. Intentar poner id de marca 99 → "No existe ese id en marcas".
+5. Editar la marca "Nike" a "Nike Inc" y volver a listar productos → el
    producto muestra "Nike Inc" sin haberlo tocado. **Esa es la gracia de
    guardar el id y no el nombre.**
+6. Senalar los productos 3 y 4: "Televisor 50" y "Laptop Basica"
+   comparten la categoria Tecnologia pero tienen lineas distintas
+   (Premium y Economica) → **prueba en vivo de que la Linea es
+   independiente de la Categoria.**
+7. (Opcional) Borrar los archivos de `media/` y mostrar que con los
+   catalogos vacios el sistema dice "No hay marcas registradas" y no
+   deja crear productos: primero los catalogos, luego el producto.
 
 ---
 

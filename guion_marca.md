@@ -2,6 +2,10 @@
 
 > Objetivo: que cualquiera entienda como funciona el CRUD de Marca con el
 > patron MVC (Modelo - Vista - Controlador), aunque nunca lo haya visto.
+>
+> Apoyo visual: la pagina de diagramas (UML de clases, arquitectura MVC y
+> diagramas de flujo) para proyectar durante la explicacion:
+> https://claude.ai/code/artifact/423f185b-9e39-4887-ab48-27f41678460b
 
 ---
 
@@ -232,10 +236,11 @@ id, nombre = l.split(",")
 marca = Marca(nombre, id)
 ```
 
-> "Leemos el archivo fila por fila. `split(',')` corta la fila en 3
-> pedazos y con ellos construimos un objeto `Marca`. Ojo: pasamos el id
-> que YA estaba guardado, para conservarlo. Si el archivo no existe
-> todavia, el `except FileNotFoundError` devuelve la lista vacia."
+> "Leemos el archivo fila por fila. `split(',')` corta la fila en 2
+> pedazos (id y nombre) y con ellos construimos un objeto `Marca`. Ojo:
+> pasamos el id que YA estaba guardado, para conservarlo. Si el archivo
+> no existe todavia, el `except FileNotFoundError` devuelve la lista
+> vacia."
 
 **Paso 4 — `guardar()`: de objetos a texto.**
 
@@ -270,7 +275,10 @@ def agregar(self, nombre):
 **Paso 1 — El menu (`iniciar`).**
 
 > "Un `while True` que muestra las 5 opciones y llama al metodo que
-> corresponda. Solo se rompe (`break`) con la opcion 5."
+> corresponda. Solo se rompe (`break`) con la opcion 5, que aqui se
+> llama 'Regresar': rompe SOLO este menu y el programa vuelve al menu
+> principal, porque el menu principal tambien esta en su propio
+> `while True`. El unico 'Salir' de verdad esta en el menu principal."
 
 **Paso 2 — Las validaciones ANTES de llamar al controlador.**
 
@@ -307,11 +315,15 @@ except Exception as ex:
 
 ## 5. Demo en vivo (3 min)
 
+Ya hay 4 datos de prueba cargados: Nike, Adidas, Samsung y HP (ids 1 a 4).
+
 1. Ejecutar `python main.py` → opcion `1` (Marcas).
-2. Agregar "Nike" y "Adidas". Listar: ids 1 y 2.
-3. Abrir `media/marcas.txt` y mostrar las filas → "esto es todo lo que hay detras".
-4. Eliminar la marca 1 y agregar otra → el id nuevo es 3, no 1: los ids no se reciclan.
-5. Intentar editar el id 99 → muestra el error y el programa sigue vivo.
+2. Listar: se ven las 4 marcas de prueba con sus ids.
+3. Agregar "Puma" → recibe el id 5 automaticamente (el mayor + 1).
+4. Abrir `media/marcas.txt` y mostrar las filas → "esto es todo lo que hay detras".
+5. Eliminar la marca 5 y agregar otra → el id nuevo es 6, no 5: los ids no se reciclan.
+6. Intentar editar el id 99 → muestra el error y el programa sigue vivo.
+7. Opcion 5 (Regresar) → vuelve al menu principal, no cierra el programa.
 
 ---
 
