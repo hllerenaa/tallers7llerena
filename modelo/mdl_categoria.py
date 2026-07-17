@@ -4,21 +4,20 @@ modelo/mdl_categoria.py
 El MODELO: aqui solo definimos QUE es una categoria.
 El modelo NO pide datos por teclado ni muestra menus.
 
-Campos: id_categoria (PK), nombre, estado.
+Campos: id_categoria (PK), nombre.
 El id es AUTOINCREMENTABLE: se calcula con el metodo siguiente_id.
 """
 
 
 class Categoria:
 
-    def __init__(self, nombre, estado, id):
+    def __init__(self, nombre, id):
         """
         Constructor: se ejecuta al hacer Categoria(...). Solo GUARDA los datos.
         El id ya viene calculado desde fuera.
         """
         self._id = int(id)
         self._nombre = nombre
-        self._estado = estado
 
     @staticmethod
     def siguiente_id(categorias):
@@ -33,32 +32,20 @@ class Categoria:
         return mayor + 1
 
     # -------------------------------------------------------------------
-    # GET y SET: dan acceso controlado a los datos.
-    #   - get_xxx  ->  LEE el dato
-    #   - set_xxx  ->  CAMBIA el dato
-    # Al final, property(...) une cada pareja para poder usarlos tambien
-    # sin parentesis: categoria.nombre  o  categoria.nombre = "Calzado".
+    # PROPERTIES: dan acceso controlado a los datos.
+    # @property = para LEER (categoria.nombre) y @nombre.setter = para
+    # CAMBIAR (categoria.nombre = "Calzado"). Se usan SIN parentesis.
     # -------------------------------------------------------------------
 
-    def get_id(self):
+    @property
+    def id(self):
+        # Solo LECTURA: no tiene setter, el id no se puede cambiar desde fuera.
         return self._id
 
-    def get_nombre(self):
+    @property
+    def nombre(self):
         return self._nombre
 
-    def set_nombre(self, valor):
+    @nombre.setter
+    def nombre(self, valor):
         self._nombre = valor
-
-    def get_estado(self):
-        # Guarda "activo" o "inactivo".
-        return self._estado
-
-    def set_estado(self, valor):
-        self._estado = valor
-
-    # property(get, set): conecta cada pareja de funciones.
-    # OJO: id solo tiene get (NO tiene set): es de SOLO LECTURA,
-    # asi el id no se puede cambiar desde fuera y siempre es unico.
-    id = property(get_id)
-    nombre = property(get_nombre, set_nombre)
-    estado = property(get_estado, set_estado)

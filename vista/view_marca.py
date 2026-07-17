@@ -49,16 +49,8 @@ class Vista:
         print("\n----- MARCAS -----")
         numero = 1
         for m in marcas:
-            print(f"{numero}). (id: {m.id}) {m.nombre} | Estado: {m.estado}")
+            print(f"{numero}). (id: {m.id}) {m.nombre}")
             numero = numero + 1
-
-    def pedir_estado(self):
-        # Pide el estado y devuelve "activo", "inactivo" o None si es invalido.
-        estado = input("Estado (activo/inactivo): ").strip().lower()
-        if estado not in ("activo", "inactivo"):
-            print("El estado debe ser 'activo' o 'inactivo'.")
-            return None
-        return estado
 
     def agregar(self):
         nombre = input("Nombre: ").strip()
@@ -66,13 +58,9 @@ class Vista:
             print("Nombre no puede estar vacio.")
             return
 
-        estado = self.pedir_estado()
-        if estado is None:
-            return
-
         # try / except: si al guardar algo falla, NO se cae el programa.
         try:
-            self.controlador.agregar(nombre, estado)
+            self.controlador.agregar(nombre)
             print("\nMarca agregada.")
         except Exception as ex:
             print(f"\nNo se pudo agregar la marca: {ex}")
@@ -99,13 +87,10 @@ class Vista:
         if nombre == "":
             print("Nombre no puede estar vacio.")
             return
-        estado = self.pedir_estado()
-        if estado is None:
-            return
 
         # try / except: si el id NO existe, el controlador lanza un error.
         try:
-            self.controlador.editar(id, nombre, estado)
+            self.controlador.editar(id, nombre)
             print("\nMarca actualizada.")
         except Exception as ex:
             print(f"\nNo se pudo editar la marca: {ex}")

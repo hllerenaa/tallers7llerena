@@ -52,16 +52,8 @@ class Vista:
         print("\n----- LINEAS -----")
         numero = 1
         for d in lineas:
-            print(f"{numero}). (id: {d.id}) {d.nombre} | Estado: {d.estado}")
+            print(f"{numero}). (id: {d.id}) {d.nombre}")
             numero = numero + 1
-
-    def pedir_estado(self):
-        # Pide el estado y devuelve "activo", "inactivo" o None si es invalido.
-        estado = input("Estado (activo/inactivo): ").strip().lower()
-        if estado not in ("activo", "inactivo"):
-            print("El estado debe ser 'activo' o 'inactivo'.")
-            return None
-        return estado
 
     def agregar(self):
         nombre = input("Nombre: ").strip()
@@ -69,15 +61,11 @@ class Vista:
             print("Nombre no puede estar vacio.")
             return
 
-        estado = self.pedir_estado()
-        if estado is None:
-            return
-
         # try / except: si al guardar algo falla (por ejemplo, no se puede
         # escribir el archivo), NO se cae el programa. Mostramos el error y
         # el menu sigue funcionando.
         try:
-            self.controlador.agregar(nombre, estado)
+            self.controlador.agregar(nombre)
             print("\nLinea agregada.")
         except Exception as ex:
             print(f"\nNo se pudo agregar la linea: {ex}")
@@ -105,14 +93,11 @@ class Vista:
         if nombre == "":
             print("Nombre no puede estar vacio.")
             return
-        estado = self.pedir_estado()
-        if estado is None:
-            return
 
         # try / except: si el id NO existe, el controlador lanza un error
         # y aqui lo atrapamos para mostrar el mensaje sin caernos.
         try:
-            self.controlador.editar(id, nombre, estado)
+            self.controlador.editar(id, nombre)
             print("\nLinea actualizada.")
         except Exception as ex:
             print(f"\nNo se pudo editar la linea: {ex}")

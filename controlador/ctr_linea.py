@@ -9,8 +9,8 @@ La Linea es un catalogo INDEPENDIENTE de la Categoria: tiene su propio
 archivo y no guarda ninguna referencia a otros catalogos.
 
 Cada linea se guarda como una fila de texto separada por comas:
-    id,nombre,estado
-Ejemplo:  1,Deportiva,activo
+    id,nombre
+Ejemplo:  1,Deportiva
 """
 
 import os
@@ -37,10 +37,10 @@ class Controlador:
                     l = l.strip()
                     if l == "":
                         continue
-                    # Cada fila trae 3 datos: id, nombre y estado.
-                    id, nombre, estado = l.split(",")
+                    # Cada fila trae 2 datos: id y nombre.
+                    id, nombre = l.split(",")
                     # Pasamos el id para CONSERVAR el que ya tenia guardado.
-                    linea = Linea(nombre, estado, id)
+                    linea = Linea(nombre, id)
                     lineas.append(linea)
         except FileNotFoundError:
             # Si el archivo todavia no existe, devolvemos la lista vacia.
@@ -52,22 +52,22 @@ class Controlador:
         with open(self.archivo, "w", encoding="utf-8") as archivo:
             for d in lineas:
                 # Guardamos tambien el id al principio de cada fila.
-                archivo.write(f"{d.id},{d.nombre},{d.estado}\n")
+                archivo.write(f"{d.id},{d.nombre}\n")
 
-    def agregar(self, nombre, estado):
+    def agregar(self, nombre):
         lineas = self.listar()
         # Pedimos el id nuevo al metodo del Modelo: el mas alto + 1.
         nuevo_id = Linea.siguiente_id(lineas)
-        lineas.append(Linea(nombre, estado, nuevo_id))
+        lineas.append(Linea(nombre, nuevo_id))
         self.guardar(lineas)
 
-    def editar(self, id, nombre, estado):
+    def editar(self, id, nombre):
         # Buscamos la linea POR SU ID (no por su posicion en la lista).
         lineas = self.listar()
         for i in range(len(lineas)):
             if lineas[i].id == id:
                 # La encontramos: la reemplazamos conservando el MISMO id.
-                lineas[i] = Linea(nombre, estado, id)
+                lineas[i] = Linea(nombre, id)
                 self.guardar(lineas)
                 return
         # Si el bucle termina sin encontrarla, avisamos con un error.

@@ -17,8 +17,8 @@ id | nombre           id | nombre            id | nombre
 2  | Adidas           2  | Ropa              2  | Casual
 
                  PRODUCTO
-id | nombre        | id_marca | id_categoria | id_linea | precio | stock | estado
-1  | Zapatilla Air |    1     |      1       |    1     | 59.99  |  10   | activo
+id | nombre        | id_marca | id_categoria | id_linea | precio | stock
+1  | Zapatilla Air |    1     |      1       |    1     | 59.99  |  10
 ```
 
 Decir:
@@ -45,10 +45,10 @@ Y el punto del diseño que pide el ejercicio:
 
 ## 2. El MODELO: `modelo/mdl_producto.py` (4 min)
 
-**Paso 1 — El constructor con 8 campos.**
+**Paso 1 — El constructor con 7 campos.**
 
 ```python
-def __init__(self, nombre, id_marca, id_categoria, id_linea, precio, stock, estado, id):
+def __init__(self, nombre, id_marca, id_categoria, id_linea, precio, stock, id):
     self._id = int(id)
     self._nombre = nombre
     self._id_marca = int(id_marca)
@@ -56,7 +56,6 @@ def __init__(self, nombre, id_marca, id_categoria, id_linea, precio, stock, esta
     self._id_linea = int(id_linea)
     self._precio = float(precio)
     self._stock = int(stock)
-    self._estado = estado
 ```
 
 Puntos a remarcar:
@@ -78,10 +77,10 @@ Puntos a remarcar:
 
 ## 3. El CONTROLADOR: `controlador/ctr_producto.py` (4 min)
 
-**Paso 1 — La fila ahora tiene 8 columnas.**
+**Paso 1 — La fila ahora tiene 7 columnas.**
 
 ```
-1,Zapatilla Air,1,1,1,59.99,10,activo
+1,Zapatilla Air,1,1,1,59.99,10
 ```
 
 > "Mismo formato de siempre, pero con mas columnas. El orden es sagrado:
@@ -90,16 +89,16 @@ Puntos a remarcar:
 **Paso 2 — Leer y escribir.**
 
 ```python
-id, nombre, id_marca, id_categoria, id_linea, precio, stock, estado = l.split(",")
+id, nombre, id_marca, id_categoria, id_linea, precio, stock = l.split(",")
 ```
 
-> "El `split(',')` ahora reparte en 8 variables. Y `guardar()` escribe
-> las 8 separadas por comas. Todo lo demas (listar → modificar →
+> "El `split(',')` ahora reparte en 7 variables. Y `guardar()` escribe
+> las 7 separadas por comas. Todo lo demas (listar → modificar →
 > guardar, buscar por id, `raise ValueError` si no existe) es identico
 > al controlador de Marca."
 
 Pregunta para la clase: *"¿Que pasaria si el nombre del producto tuviera
-una coma, como 'Zapatilla, roja'?"* → El `split` daria mas de 8 pedazos y
+una coma, como 'Zapatilla, roja'?"* → El `split` daria mas de 7 pedazos y
 se romperia la lectura. Por eso los sistemas reales usan bases de datos o
 formatos como CSV con comillas. Buena mejora a futuro.
 
@@ -141,7 +140,7 @@ Explicarlo en 3 reglas:
 
 **Paso 3 — `pedir_datos()`: no repetir codigo.**
 
-> "Agregar y editar piden exactamente los mismos 7 datos. En vez de
+> "Agregar y editar piden exactamente los mismos 6 datos. En vez de
 > copiar y pegar todo dos veces, lo pusimos en un solo metodo que usan
 > ambos. Si un dato falla, devuelve `None` y no se guarda nada."
 
@@ -173,9 +172,9 @@ Seguir este orden (es importante):
    el producto.**
 2. Crear la marca "Nike", la categoria "Calzado" y la linea "Deportiva".
 3. Crear el producto "Zapatilla Air": el sistema muestra cada catalogo y
-   pide el id. Poner precio 59.99, stock 10, activo.
+   pide el id. Poner precio 59.99 y stock 10.
 4. Listar productos → se ven los NOMBRES, no los numeros.
-5. Abrir `media/productos.txt` → se ven los NUMEROS: `1,Zapatilla Air,1,1,1,59.99,10,activo`.
+5. Abrir `media/productos.txt` → se ven los NUMEROS: `1,Zapatilla Air,1,1,1,59.99,10`.
    Este contraste (paso 4 vs paso 5) es el momento "ajá" de las FK.
 6. Intentar poner id de marca 99 → "No existe ese id en marcas".
 7. Editar la marca "Nike" a "Nike Inc" y volver a listar productos → el

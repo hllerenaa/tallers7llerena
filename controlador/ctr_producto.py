@@ -6,8 +6,8 @@ productos en el archivo. No muestra menus ni pide datos (de eso se encarga
 la Vista) y no define que es un producto (de eso se encarga el Modelo).
 
 Cada producto se guarda como una fila de texto separada por comas:
-    id,nombre,id_marca,id_categoria,id_linea,precio,stock,estado
-Ejemplo:  1,Zapatilla Air,1,2,1,59.99,10,activo
+    id,nombre,id_marca,id_categoria,id_linea,precio,stock
+Ejemplo:  1,Zapatilla Air,1,2,1,59.99,10
 
 Las columnas id_marca, id_categoria e id_linea son las FK: apuntan a los
 ids de los catalogos de Marca, Categoria y Linea.
@@ -37,10 +37,10 @@ class Controlador:
                     l = l.strip()
                     if l == "":
                         continue
-                    # Cada fila trae 8 datos, en el mismo orden en que se guardan.
-                    id, nombre, id_marca, id_categoria, id_linea, precio, stock, estado = l.split(",")
+                    # Cada fila trae 7 datos, en el mismo orden en que se guardan.
+                    id, nombre, id_marca, id_categoria, id_linea, precio, stock = l.split(",")
                     producto = Producto(nombre, id_marca, id_categoria, id_linea,
-                                        precio, stock, estado, id)
+                                        precio, stock, id)
                     productos.append(producto)
         except FileNotFoundError:
             # Si el archivo todavia no existe, devolvemos la lista vacia.
@@ -52,24 +52,24 @@ class Controlador:
         with open(self.archivo, "w", encoding="utf-8") as archivo:
             for p in productos:
                 archivo.write(f"{p.id},{p.nombre},{p.id_marca},{p.id_categoria},"
-                              f"{p.id_linea},{p.precio},{p.stock},{p.estado}\n")
+                              f"{p.id_linea},{p.precio},{p.stock}\n")
 
-    def agregar(self, nombre, id_marca, id_categoria, id_linea, precio, stock, estado):
+    def agregar(self, nombre, id_marca, id_categoria, id_linea, precio, stock):
         productos = self.listar()
         # Pedimos el id nuevo al metodo del Modelo: el mas alto + 1.
         nuevo_id = Producto.siguiente_id(productos)
         productos.append(Producto(nombre, id_marca, id_categoria, id_linea,
-                                  precio, stock, estado, nuevo_id))
+                                  precio, stock, nuevo_id))
         self.guardar(productos)
 
-    def editar(self, id, nombre, id_marca, id_categoria, id_linea, precio, stock, estado):
+    def editar(self, id, nombre, id_marca, id_categoria, id_linea, precio, stock):
         # Buscamos el producto POR SU ID (no por su posicion en la lista).
         productos = self.listar()
         for i in range(len(productos)):
             if productos[i].id == id:
                 # Lo encontramos: lo reemplazamos conservando el MISMO id.
                 productos[i] = Producto(nombre, id_marca, id_categoria, id_linea,
-                                        precio, stock, estado, id)
+                                        precio, stock, id)
                 self.guardar(productos)
                 return
         # Si el bucle termina sin encontrarlo, avisamos con un error.

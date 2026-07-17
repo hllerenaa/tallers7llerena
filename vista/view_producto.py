@@ -80,7 +80,7 @@ class Vista:
             linea = self.nombre_por_id(lineas, p.id_linea)
             print(f"{numero}). (id: {p.id}) {p.nombre} | Marca: {marca} | "
                   f"Categoria: {categoria} | Linea: {linea} | "
-                  f"Precio: {p.precio} | Stock: {p.stock} | Estado: {p.estado}")
+                  f"Precio: {p.precio} | Stock: {p.stock}")
             numero = numero + 1
 
     def pedir_fk(self, lista, titulo):
@@ -95,7 +95,7 @@ class Vista:
 
         print(f"\n{titulo.upper()} disponibles:")
         for item in lista:
-            print(f"   (id: {item.id}) {item.nombre} | Estado: {item.estado}")
+            print(f"   (id: {item.id}) {item.nombre}")
 
         id = input(f"Id de la {titulo[:-1]}: ").strip()
         if not id.isdigit():
@@ -109,14 +109,6 @@ class Vista:
                 return id
         print(f"No existe ese id en {titulo}.")
         return None
-
-    def pedir_estado(self):
-        # Pide el estado y devuelve "activo", "inactivo" o None si es invalido.
-        estado = input("Estado (activo/inactivo): ").strip().lower()
-        if estado not in ("activo", "inactivo"):
-            print("El estado debe ser 'activo' o 'inactivo'.")
-            return None
-        return estado
 
     def pedir_datos(self):
         """
@@ -156,11 +148,7 @@ class Vista:
             return None
         stock = int(stock)
 
-        estado = self.pedir_estado()
-        if estado is None:
-            return None
-
-        return nombre, id_marca, id_categoria, id_linea, precio, stock, estado
+        return nombre, id_marca, id_categoria, id_linea, precio, stock
 
     def agregar(self):
         datos = self.pedir_datos()

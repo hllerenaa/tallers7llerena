@@ -10,8 +10,8 @@
 Decir algo asi:
 
 > "Vamos a hacer un catalogo de Marcas para una tienda. Una marca es algo
-> muy simple: tiene un **id** (su numero unico), un **nombre** (ej: Nike)
-> y un **estado** (activo o inactivo). Queremos poder **agregarlas,
+> muy simple: tiene un **id** (su numero unico) y un **nombre** (ej: Nike).
+> Queremos poder **agregarlas,
 > listarlas, editarlas y eliminarlas**: eso se llama un CRUD."
 
 Luego explicar por que dividimos el codigo en 3 archivos (MVC):
@@ -38,13 +38,12 @@ la Vista nunca escribe en el archivo y el Controlador nunca hace `input()`.
 
 ```python
 class Marca:
-    def __init__(self, nombre, estado, id):
+    def __init__(self, nombre, id):
         self._id = int(id)
         self._nombre = nombre
-        self._estado = estado
 ```
 
-> "El constructor solo GUARDA los 3 datos. No valida, no pregunta nada.
+> "El constructor solo GUARDA los 2 datos. No valida, no pregunta nada.
 > El guion bajo (`_id`) es una convencion de Python que significa:
 > 'este dato es interno, no lo toques directo desde fuera'."
 
@@ -67,28 +66,27 @@ def siguiente_id(marcas):
 > "Es `@staticmethod` porque no necesita una marca concreta (no usa
 > `self`): solo mira la lista completa."
 
-**Paso 3 — Los get, los set y property.**
+**Paso 3 — Las properties.**
 
 ```python
-def get_id(self):
+@property
+def id(self):
     return self._id
 
-def get_nombre(self):
+@property
+def nombre(self):
     return self._nombre
 
-def set_nombre(self, valor):
+@nombre.setter
+def nombre(self, valor):
     self._nombre = valor
-
-id = property(get_id)                       # solo lectura
-nombre = property(get_nombre, set_nombre)   # lectura y escritura
 ```
 
-> "Cada dato tiene su pareja de funciones: `get_xxx` para LEER y
-> `set_xxx` para CAMBIAR. Y al final, `property(...)` las conecta para
-> poder usarlas como si fueran variables: `marca.nombre`. Fijense que
-> `id = property(get_id)` NO recibe un set: por eso el id no se puede
-> cambiar desde fuera. `nombre` y `estado` si tienen su set porque esos
-> si se pueden editar."
+> "Una property permite leer el dato como si fuera una variable normal:
+> `marca.nombre`, sin parentesis. `@property` es la funcion para LEER y
+> `@nombre.setter` es la funcion para CAMBIAR. Fijense que `id` NO tiene
+> setter: por eso el id no se puede cambiar desde fuera. `nombre` si lo
+> tiene porque ese si se puede editar."
 
 ---
 
@@ -104,51 +102,43 @@ nombre = property(get_nombre, set_nombre)   # lectura y escritura
 
 **Paso 2 — La solucion: la analogia de la ventanilla.**
 
-> "Por eso creamos dos ventanillas de atencion para cada dato: una
-> funcion `get_xxx` para LEER y una funcion `set_xxx` para CAMBIAR.
-> Los datos quedan guardados en bodega (los `_algo`) y las ventanillas
-> son la unica forma correcta de pedirlos. Tu decides que ventanillas
-> abrir."
+> "Por eso abrimos ventanillas de atencion: los datos quedan guardados
+> en bodega (los `_algo`) y las properties son las ventanillas por donde
+> se piden. Tu decides que ventanillas abrir."
 
 ```python
-def get_nombre(self):          # ventanilla para LEER
+@property
+def nombre(self):          # ventanilla para LEER
     return self._nombre
 
-def set_nombre(self, valor):   # ventanilla para ESCRIBIR
+@nombre.setter
+def nombre(self, valor):   # ventanilla para ESCRIBIR
     self._nombre = valor
 ```
 
-**Paso 3 — property: el atajo sin parentesis.**
+**Paso 3 — El detalle que sorprende: se usa SIN parentesis.**
 
-> "Y al final de la clase, `property(...)` conecta cada pareja:"
+> "Aunque es un metodo, se usa como si fuera una variable: escribes
+> `marca.nombre`, no `marca.nombre()`. Python ve el `@property` y
+> ejecuta el metodo por ti: si LEO `marca.nombre` llama a la funcion de
+> arriba, y si ASIGNO `marca.nombre = 'Nike'` llama a la del setter.
+> Por fuera parece un dato simple; por dentro hay un metodo
+> controlandolo."
 
-```python
-nombre = property(get_nombre, set_nombre)
-```
+**Paso 4 — El remate: el id NO tiene setter.**
 
-> "Gracias a esa linea, en vez de escribir `marca.get_nombre()` puedo
-> escribir simplemente `marca.nombre`, como si fuera una variable.
-> Python ejecuta el get o el set por mi: si LEO `marca.nombre` llama a
-> `get_nombre`, y si ASIGNO `marca.nombre = 'Nike'` llama a
-> `set_nombre`. Por fuera parece un dato simple; por dentro hay una
-> funcion controlandolo. Las dos formas funcionan."
-
-**Paso 4 — El remate: el id NO tiene set.**
-
-> "Miren el `id`: su property se creo solo con el get,
-> `id = property(get_id)`. O sea: abrimos la ventanilla de lectura y la
-> de escritura la dejamos cerrada. Por eso el id no se puede cambiar
-> desde fuera, ni por error."
+> "Miren el `id`: tiene ventanilla para leer pero NO tiene `@id.setter`.
+> O sea: abrimos la ventanilla de lectura y la de escritura la dejamos
+> cerrada. Por eso el id no se puede cambiar desde fuera, ni por error."
 
 **Demo en vivo (30 segundos, en la consola de Python):**
 
 ```python
 >>> from modelo.mdl_marca import Marca
->>> m = Marca("Nike", "activo", 1)
->>> m.get_nombre()        # forma clasica: 'Nike'
->>> m.nombre              # forma property, sin parentesis: 'Nike'
->>> m.nombre = "Adidas"   # escribe: por dentro llama a set_nombre
->>> m.id = 99             # ERROR: AttributeError, no tiene set
+>>> m = Marca("Nike", 1)
+>>> m.nombre              # lee: 'Nike' (sin parentesis)
+>>> m.nombre = "Adidas"   # escribe: por dentro llama al setter
+>>> m.id = 99             # ERROR: AttributeError, no tiene setter
 ```
 
 Ese `AttributeError` en vivo es el momento "aja": la property protege el dato.
@@ -201,7 +191,7 @@ nuevo_id = Marca.siguiente_id(marcas)   # con la clase, sin crear ninguna marca
 | ¿Recibe `self`? | Si ("esta marca") | No |
 | ¿Necesita un objeto creado? | Si | No |
 | ¿Como se llama? | `m.nombre` | `Marca.siguiente_id(lista)` |
-| Ejemplo en el proyecto | leer/cambiar nombre y estado | calcular el id del siguiente |
+| Ejemplo en el proyecto | leer/cambiar el nombre | calcular el id del siguiente |
 
 **Pregunta trampa que pueden hacer:** *"¿Por que no calcular el id
 dentro del constructor?"* → Porque el constructor debe ser tonto: solo
@@ -219,8 +209,8 @@ calcula fuera (con el static method) y el constructor solo lo recibe.
 > separada por comas, como una mini base de datos:"
 
 ```
-1,Nike,activo
-2,Adidas,inactivo
+1,Nike
+2,Adidas
 ```
 
 **Paso 2 — El constructor prepara la ruta.**
@@ -238,8 +228,8 @@ self.archivo = os.path.join(carpeta, "marcas.txt")
 **Paso 3 — `listar()`: de texto a objetos.**
 
 ```python
-id, nombre, estado = l.split(",")
-marca = Marca(nombre, estado, id)
+id, nombre = l.split(",")
+marca = Marca(nombre, id)
 ```
 
 > "Leemos el archivo fila por fila. `split(',')` corta la fila en 3
@@ -255,10 +245,10 @@ marca = Marca(nombre, estado, id)
 **Paso 5 — `agregar()`, el flujo completo.**
 
 ```python
-def agregar(self, nombre, estado):
+def agregar(self, nombre):
     marcas = self.listar()                  # 1. leo lo que hay
     nuevo_id = Marca.siguiente_id(marcas)   # 2. calculo el id nuevo
-    marcas.append(Marca(nombre, estado, nuevo_id))  # 3. agrego a la lista
+    marcas.append(Marca(nombre, nuevo_id))          # 3. agrego a la lista
     self.guardar(marcas)                    # 4. guardo todo
 ```
 
@@ -292,13 +282,13 @@ if nombre == "":
 ```
 
 > "La Vista es el filtro: si el dato esta mal, ni siquiera molestamos al
-> controlador. `pedir_estado()` solo acepta 'activo' o 'inactivo'."
+> controlador."
 
 **Paso 3 — El try/except.**
 
 ```python
 try:
-    self.controlador.agregar(nombre, estado)
+    self.controlador.agregar(nombre)
     print("\nMarca agregada.")
 except Exception as ex:
     print(f"\nNo se pudo agregar la marca: {ex}")
@@ -318,7 +308,7 @@ except Exception as ex:
 ## 5. Demo en vivo (3 min)
 
 1. Ejecutar `python main.py` → opcion `1` (Marcas).
-2. Agregar "Nike" activo y "Adidas" activo. Listar: ids 1 y 2.
+2. Agregar "Nike" y "Adidas". Listar: ids 1 y 2.
 3. Abrir `media/marcas.txt` y mostrar las filas → "esto es todo lo que hay detras".
 4. Eliminar la marca 1 y agregar otra → el id nuevo es 3, no 1: los ids no se reciclan.
 5. Intentar editar el id 99 → muestra el error y el programa sigue vivo.
