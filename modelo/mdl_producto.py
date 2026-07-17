@@ -42,67 +42,67 @@ class Producto:
         return mayor + 1
 
     # -------------------------------------------------------------------
-    # PROPERTIES: dan acceso controlado a los datos
+    # GET y SET: dan acceso controlado a los datos.
+    #   - get_xxx  ->  LEE el dato
+    #   - set_xxx  ->  CAMBIA el dato
+    # Al final, property(...) une cada pareja para poder usarlos tambien
+    # sin parentesis: producto.precio  o  producto.precio = 59.99.
     # -------------------------------------------------------------------
 
-    @property
-    def id(self):
-        # Solo LECTURA: no tiene setter, el id no se puede cambiar desde fuera.
+    def get_id(self):
         return self._id
 
-    @property
-    def nombre(self):
+    def get_nombre(self):
         return self._nombre
 
-    @nombre.setter
-    def nombre(self, valor):
+    def set_nombre(self, valor):
         self._nombre = valor
 
-    @property
-    def id_marca(self):
+    def get_id_marca(self):
         return self._id_marca
 
-    @id_marca.setter
-    def id_marca(self, valor):
+    def set_id_marca(self, valor):
         self._id_marca = int(valor)
 
-    @property
-    def id_categoria(self):
+    def get_id_categoria(self):
         return self._id_categoria
 
-    @id_categoria.setter
-    def id_categoria(self, valor):
+    def set_id_categoria(self, valor):
         self._id_categoria = int(valor)
 
-    @property
-    def id_linea(self):
+    def get_id_linea(self):
         return self._id_linea
 
-    @id_linea.setter
-    def id_linea(self, valor):
+    def set_id_linea(self, valor):
         self._id_linea = int(valor)
 
-    @property
-    def precio(self):
+    def get_precio(self):
         return self._precio
 
-    @precio.setter
-    def precio(self, valor):
+    def set_precio(self, valor):
         self._precio = float(valor)
 
-    @property
-    def stock(self):
+    def get_stock(self):
         return self._stock
 
-    @stock.setter
-    def stock(self, valor):
+    def set_stock(self, valor):
         self._stock = int(valor)
 
-    @property
-    def estado(self):
+    def get_estado(self):
         # Guarda "activo" o "inactivo".
         return self._estado
 
-    @estado.setter
-    def estado(self, valor):
+    def set_estado(self, valor):
         self._estado = valor
+
+    # property(get, set): conecta cada pareja de funciones.
+    # OJO: id solo tiene get (NO tiene set): es de SOLO LECTURA,
+    # asi el id no se puede cambiar desde fuera y siempre es unico.
+    id = property(get_id)
+    nombre = property(get_nombre, set_nombre)
+    id_marca = property(get_id_marca, set_id_marca)
+    id_categoria = property(get_id_categoria, set_id_categoria)
+    id_linea = property(get_id_linea, set_id_linea)
+    precio = property(get_precio, set_precio)
+    stock = property(get_stock, set_stock)
+    estado = property(get_estado, set_estado)

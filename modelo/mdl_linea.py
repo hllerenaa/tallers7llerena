@@ -48,36 +48,32 @@ class Linea:
         return mayor + 1
 
     # -------------------------------------------------------------------
-    # PROPERTIES (los "def property"): dan acceso controlado a los datos
+    # GET y SET: dan acceso controlado a los datos.
+    #   - get_xxx  ->  LEE el dato
+    #   - set_xxx  ->  CAMBIA el dato
+    # Al final, property(...) une cada pareja para poder usarlos tambien
+    # sin parentesis: linea.nombre  o  linea.nombre = "Deportiva".
     # -------------------------------------------------------------------
 
-    @property
-    def id(self):
-        """
-        Property de solo LECTURA para el id.
-        Al escribir 'linea.id' se ejecuta esto y devuelve el numero.
-        Como NO tiene un @id.setter, el id NO se puede cambiar desde fuera:
-        asi el id siempre es unico y no se modifica por error.
-        """
+    def get_id(self):
         return self._id
 
-    @property
-    def nombre(self):
-        # Al escribir 'linea.nombre' se devuelve el nombre guardado.
+    def get_nombre(self):
         return self._nombre
 
-    @nombre.setter
-    def nombre(self, valor):
-        # Al escribir 'linea.nombre = "algo"' se guarda el nuevo valor aqui.
+    def set_nombre(self, valor):
         self._nombre = valor
 
-    @property
-    def estado(self):
-        # Al escribir 'linea.estado' se devuelve el estado guardado
-        # ("activo" o "inactivo").
+    def get_estado(self):
+        # Guarda "activo" o "inactivo".
         return self._estado
 
-    @estado.setter
-    def estado(self, valor):
-        # Al escribir 'linea.estado = "activo"' se guarda el nuevo valor aqui.
+    def set_estado(self, valor):
         self._estado = valor
+
+    # property(get, set): conecta cada pareja de funciones.
+    # OJO: id solo tiene get (NO tiene set): es de SOLO LECTURA,
+    # asi el id no se puede cambiar desde fuera y siempre es unico.
+    id = property(get_id)
+    nombre = property(get_nombre, set_nombre)
+    estado = property(get_estado, set_estado)

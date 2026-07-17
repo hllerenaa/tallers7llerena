@@ -33,27 +33,32 @@ class Marca:
         return mayor + 1
 
     # -------------------------------------------------------------------
-    # PROPERTIES: dan acceso controlado a los datos
+    # GET y SET: dan acceso controlado a los datos.
+    #   - get_xxx  ->  LEE el dato
+    #   - set_xxx  ->  CAMBIA el dato
+    # Al final, property(...) une cada pareja para poder usarlos tambien
+    # sin parentesis: marca.nombre  o  marca.nombre = "Nike".
     # -------------------------------------------------------------------
 
-    @property
-    def id(self):
-        # Solo LECTURA: no tiene setter, el id no se puede cambiar desde fuera.
+    def get_id(self):
         return self._id
 
-    @property
-    def nombre(self):
+    def get_nombre(self):
         return self._nombre
 
-    @nombre.setter
-    def nombre(self, valor):
+    def set_nombre(self, valor):
         self._nombre = valor
 
-    @property
-    def estado(self):
+    def get_estado(self):
         # Guarda "activo" o "inactivo".
         return self._estado
 
-    @estado.setter
-    def estado(self, valor):
+    def set_estado(self, valor):
         self._estado = valor
+
+    # property(get, set): conecta cada pareja de funciones.
+    # OJO: id solo tiene get (NO tiene set): es de SOLO LECTURA,
+    # asi el id no se puede cambiar desde fuera y siempre es unico.
+    id = property(get_id)
+    nombre = property(get_nombre, set_nombre)
+    estado = property(get_estado, set_estado)

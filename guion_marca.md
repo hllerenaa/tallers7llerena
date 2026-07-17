@@ -67,18 +67,147 @@ def siguiente_id(marcas):
 > "Es `@staticmethod` porque no necesita una marca concreta (no usa
 > `self`): solo mira la lista completa."
 
-**Paso 3 — Las properties.**
+**Paso 3 — Los get, los set y property.**
 
 ```python
-@property
-def id(self):
+def get_id(self):
     return self._id
+
+def get_nombre(self):
+    return self._nombre
+
+def set_nombre(self, valor):
+    self._nombre = valor
+
+id = property(get_id)                       # solo lectura
+nombre = property(get_nombre, set_nombre)   # lectura y escritura
 ```
 
-> "Una property permite leer el dato como si fuera una variable normal:
-> `marca.id`. Fijense que `id` NO tiene setter: por eso el id no se puede
-> cambiar desde fuera. `nombre` y `estado` si tienen setter porque esos
+> "Cada dato tiene su pareja de funciones: `get_xxx` para LEER y
+> `set_xxx` para CAMBIAR. Y al final, `property(...)` las conecta para
+> poder usarlas como si fueran variables: `marca.nombre`. Fijense que
+> `id = property(get_id)` NO recibe un set: por eso el id no se puede
+> cambiar desde fuera. `nombre` y `estado` si tienen su set porque esos
 > si se pueden editar."
+
+---
+
+## 2.1 Como explicar `@property` a fondo (5 min)
+
+**Paso 1 — Empezar por el problema (sin property).**
+
+> "Cuando creamos una marca, sus datos quedan guardados con guion bajo:
+> `_nombre`, `_id`. Ese guion bajo es una señal en Python que significa:
+> 'esto es interno, no lo toques directo'. Pero si alguien escribe
+> `marca._id = 999`, Python lo deja... y nos rompe todo el sistema,
+> porque el id debe ser unico."
+
+**Paso 2 — La solucion: la analogia de la ventanilla.**
+
+> "Por eso creamos dos ventanillas de atencion para cada dato: una
+> funcion `get_xxx` para LEER y una funcion `set_xxx` para CAMBIAR.
+> Los datos quedan guardados en bodega (los `_algo`) y las ventanillas
+> son la unica forma correcta de pedirlos. Tu decides que ventanillas
+> abrir."
+
+```python
+def get_nombre(self):          # ventanilla para LEER
+    return self._nombre
+
+def set_nombre(self, valor):   # ventanilla para ESCRIBIR
+    self._nombre = valor
+```
+
+**Paso 3 — property: el atajo sin parentesis.**
+
+> "Y al final de la clase, `property(...)` conecta cada pareja:"
+
+```python
+nombre = property(get_nombre, set_nombre)
+```
+
+> "Gracias a esa linea, en vez de escribir `marca.get_nombre()` puedo
+> escribir simplemente `marca.nombre`, como si fuera una variable.
+> Python ejecuta el get o el set por mi: si LEO `marca.nombre` llama a
+> `get_nombre`, y si ASIGNO `marca.nombre = 'Nike'` llama a
+> `set_nombre`. Por fuera parece un dato simple; por dentro hay una
+> funcion controlandolo. Las dos formas funcionan."
+
+**Paso 4 — El remate: el id NO tiene set.**
+
+> "Miren el `id`: su property se creo solo con el get,
+> `id = property(get_id)`. O sea: abrimos la ventanilla de lectura y la
+> de escritura la dejamos cerrada. Por eso el id no se puede cambiar
+> desde fuera, ni por error."
+
+**Demo en vivo (30 segundos, en la consola de Python):**
+
+```python
+>>> from modelo.mdl_marca import Marca
+>>> m = Marca("Nike", "activo", 1)
+>>> m.get_nombre()        # forma clasica: 'Nike'
+>>> m.nombre              # forma property, sin parentesis: 'Nike'
+>>> m.nombre = "Adidas"   # escribe: por dentro llama a set_nombre
+>>> m.id = 99             # ERROR: AttributeError, no tiene set
+```
+
+Ese `AttributeError` en vivo es el momento "aja": la property protege el dato.
+
+---
+
+## 2.2 Como explicar `@staticmethod` a fondo (5 min)
+
+**Paso 1 — Empezar por lo normal.**
+
+> "Un metodo normal siempre recibe `self`, que significa 'ESTA marca en
+> concreto'. Por ejemplo, `m.nombre` es el nombre de ESA marca. Para
+> usarlo necesitas tener una marca en la mano."
+
+**Paso 2 — El problema que lo justifica (el argumento clave).**
+
+> "Ahora piensen en `siguiente_id`. Sirve para calcular el id de una
+> marca **que todavia no existe**. ¿Como le voy a preguntar su id a una
+> marca que aun no he creado? No puedo. Es el huevo y la gallina:
+> necesito el id ANTES de crear el objeto."
+
+**Paso 3 — La solucion.**
+
+> "Por eso es `@staticmethod`: es una funcion que NO usa `self` — no le
+> importa ninguna marca en concreto, solo mira la lista completa y
+> devuelve el mayor + 1. La ponemos DENTRO de la clase solo porque el
+> tema es 'cosas de marcas', para tenerla ordenada ahi."
+
+Analogia:
+
+> "Es como una calculadora colgada en la pared de la bodega: pertenece a
+> la bodega porque ahi se usa, pero no pertenece a ninguna caja en
+> particular."
+
+**Paso 4 — Como se llama: con el nombre de la CLASE, no de un objeto.**
+
+```python
+nuevo_id = Marca.siguiente_id(marcas)   # con la clase, sin crear ninguna marca
+```
+
+> "Fijense: `Marca.siguiente_id(...)`, no `m.siguiente_id(...)`. No
+> necesite ningun objeto. Asi lo usa el controlador en `agregar()`:
+> primero calcula el id con el static method, y CON ese id ya crea la
+> marca."
+
+**La comparacion final (dejarla en la pizarra):**
+
+| | Metodo normal / property | `@staticmethod` |
+|---|---|---|
+| ¿Recibe `self`? | Si ("esta marca") | No |
+| ¿Necesita un objeto creado? | Si | No |
+| ¿Como se llama? | `m.nombre` | `Marca.siguiente_id(lista)` |
+| Ejemplo en el proyecto | leer/cambiar nombre y estado | calcular el id del siguiente |
+
+**Pregunta trampa que pueden hacer:** *"¿Por que no calcular el id
+dentro del constructor?"* → Porque el constructor debe ser tonto: solo
+guardar lo que le den. Si calculara el id, al LEER el archivo se
+recalcularian los ids y se perderian los originales. Por eso el id se
+calcula fuera (con el static method) y el constructor solo lo recibe.
 
 ---
 
