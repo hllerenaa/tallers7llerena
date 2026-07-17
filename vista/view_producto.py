@@ -28,14 +28,14 @@ class Vista:
         self.ctr_linea = ControladorLinea()
 
     def iniciar(self):
-        # Este es el menu principal: se repite hasta que el usuario elige salir.
+        # Este es el menu del catalogo: se repite hasta que el usuario elige regresar.
         while True:
             print("\n----- SISTEMA DE PRODUCTOS -----")
             print("1. Agregar producto")
             print("2. Listar productos")
             print("3. Editar producto")
             print("4. Eliminar producto")
-            print("5. Salir")
+            print("5. Regresar")
             opcion = input("Elige una opcion: ")
 
             if opcion == "1":
@@ -47,7 +47,8 @@ class Vista:
             elif opcion == "4":
                 self.eliminar()
             elif opcion == "5":
-                print("\nHasta luego.")
+                # Regresa al menu principal (solo rompe ESTE menu).
+                print("\nRegresando al menu principal...")
                 break
             else:
                 print("\nOpcion no valida. Elige del 1 al 5.")
